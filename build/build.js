@@ -8,20 +8,6 @@ if (!fs.existsSync('dist')) {
   fs.mkdirSync('dist')
 }
 
-// Update main file
-const version = process.env.VERSION || require('../package.json').version
-const main = fs
-  .readFileSync('src/core/index.js', 'utf-8')
-  .replace(/Vue\.version = '[^']+'/, "Vue.version = '" + version + "'")
-fs.writeFileSync('src/core/index.js', main)
-
-// update weex subversion
-const weexVersion = process.env.WEEX_VERSION || require('../packages/weex-vue-framework/package.json').version
-const weexMain = fs
-  .readFileSync('src/entries/weex-framework.js', 'utf-8')
-  .replace(/Vue\.version = '[^']+'/, "Vue.version = '" + weexVersion + "'")
-fs.writeFileSync('src/entries/weex-framework.js', weexMain)
-
 let builds = require('./config').getAllBuilds()
 
 // filter builds via command line arg
@@ -60,9 +46,7 @@ function buildEntry (config) {
     const code = bundle.generate(config).code
     if (isProd) {
       var minified = (config.banner ? config.banner + '\n' : '') + uglify.minify(code, {
-        fromString: true,
         output: {
-          screw_ie8: true,
           ascii_only: true
         },
         compress: {
